@@ -18,10 +18,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+#Connot's number: 242c5f
+
 # Imports
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
 import re
+from InstagramAPI import InstagramAPI
+import getpass
+
+igUserName = raw_input("Enter your IG username: ")
+igPassword = getpass.getpass()
+
 
 #Google Drive authentication stuff
 gauth = GoogleAuth()
@@ -49,7 +57,6 @@ IDList = []
 for line in fileNamesReadRow:
 	start = line.index("id': u'") + len("id': u'")
 	end = line.index("',", start)
-	print(line[start:end])
 	IDList.append(line[start:end])
 
 #Get the filenames
@@ -60,10 +67,19 @@ for line in fileNamesReadRow:
 	nameList.append(line[start:end])
 
 #Remove the .jpg from the filename
-for item in nameList:
-	item = item[:-4]
+nameList[0] = nameList[0][:-4]
+
+#Sets the caption
+caption = '"' + nameList[0] + '"'
 
 #Download the first image from the folder and then delete from Google Drive
 imageToDownload = drive.CreateFile({'id': IDList[0]})
-imageToDownload.GetContentFile('imageToUpload.jpg')
+imageToDownload.GetContentFile(nameList[0] + ".jpg")
 imageToDownload.Delete()
+
+#Login to Insta
+igapi = InstagramAPI(igUserName,igPassword)
+igapi.login()
+
+igapi.uploadPhoto("imageToUpload.jpg",caption=caption,upload_id=None)
+print("Image " + caption + " uploaded.")
