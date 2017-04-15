@@ -26,6 +26,8 @@ from pydrive.auth import GoogleAuth
 import re
 from InstagramAPI import InstagramAPI
 import getpass
+from random import randint
+import time
 
 igUserName = raw_input("Enter your IG username: ")
 igPassword = getpass.getpass()
@@ -39,47 +41,50 @@ drive = GoogleDrive(gauth) # Create GoogleDrive instance with authenticated Goog
 
 #Designates Google Drive Folder
 folderID = '0B77gCYHoIAkAd29sREZBNlhPclk'
-file_list = drive.ListFile({'q': "'%s' in parents and trashed=false" % folderID}).GetList()
+while True:
+	file_list = drive.ListFile({'q': "'%s' in parents and trashed=false" % folderID}).GetList()
 
-#Writes the Google Drive information to a text file
-fileNamesWrite = open('fileNames.txt', 'wr')
+	#Writes the Google Drive information to a text file
+	fileNamesWrite = open('fileNames.txt', 'wr')
 
-for item in file_list:
-	fileNamesWrite.write(str(item) + "\n")
-fileNamesWrite.close()
+	for item in file_list:
+		fileNamesWrite.write(str(item) + "\n")
+	fileNamesWrite.close()
 
-#Reads the text file to get file IDs and names
-fileNamesRead = open('fileNames.txt', 'r')
-fileNamesReadRow = fileNamesRead.readlines()
+	#Reads the text file to get file IDs and names
+	fileNamesRead = open('fileNames.txt', 'r')
+	fileNamesReadRow = fileNamesRead.readlines()
 
-#Get the file IDs
-IDList = []
-for line in fileNamesReadRow:
-	start = line.index("id': u'") + len("id': u'")
-	end = line.index("',", start)
-	IDList.append(line[start:end])
+	#Get the file IDs
+	IDList = []
+	for line in fileNamesReadRow:
+		start = line.index("id': u'") + len("id': u'")
+		end = line.index("',", start)
+		IDList.append(line[start:end])
 
-#Get the filenames
-nameList = []
-for line in fileNamesReadRow:
-	start = line.index("originalFilename': u'") + len("originalFilename': u'")
-	end = line.index("',", start)
-	nameList.append(line[start:end])
+	#Get the filenames
+	nameList = []
+	for line in fileNamesReadRow:
+		start = line.index("originalFilename': u'") + len("originalFilename': u'")
+		end = line.index("',", start)
+		nameList.append(line[start:end])
 
-#Remove the .jpg from the filename
-nameList[0] = nameList[0][:-4]
+	#Remove the .jpg from the filename
+	nameList[0] = nameList[0][:-4]
 
-#Sets the caption
-caption = '"' + nameList[0] + '"'
+	#Sets the caption
+	caption = '"' + nameList[0] + '"'
 
-#Download the first image from the folder and then delete from Google Drive
-imageToDownload = drive.CreateFile({'id': IDList[0]})
-imageToDownload.GetContentFile(nameList[0] + ".jpg")
-imageToDownload.Delete()
+	#Download the first image from the folder and then delete from Google Drive
+	imageToDownload = drive.CreateFile({'id': IDList[0]})
+	imageToDownload.GetContentFile(nameList[0] + ".jpg")
+	imageToDownload.Delete()
 
-#Login to Insta
-igapi = InstagramAPI(igUserName,igPassword)
-igapi.login()
+	#Login to Insta
+	igapi = InstagramAPI(igUserName,igPassword)
+	igapi.login()
 
-igapi.uploadPhoto("imageToUpload.jpg",caption=caption,upload_id=None)
-print("Image " + caption + " uploaded.")
+	igapi.uploadPhoto("imageToUpload.jpg",caption=caption,upload_id=None)
+	print("Image " + caption + " uploaded.")
+
+	time.sleep(randint(25200,32400))
