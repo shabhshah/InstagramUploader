@@ -27,6 +27,7 @@ import re
 from InstagramAPI import InstagramAPI
 import getpass
 from random import randint
+import random
 import time
 
 igUserName = raw_input("Enter your IG username: ")
@@ -46,10 +47,16 @@ while True:
 
 	#Writes the Google Drive information to a text file
 	fileNamesWrite = open('fileNames.txt', 'wr')
-
 	for item in file_list:
 		fileNamesWrite.write(str(item) + "\n")
 	fileNamesWrite.close()
+
+	#Randomize order of upload
+	with open('fileNames.txt', 'rb') as inFile:
+		lines = inFile.readlines()
+	random.shuffle(lines)
+	with open('fileNames.txt', 'wb') as outFile:
+		outFile.writelines(lines)
 
 	#Reads the text file to get file IDs and names
 	fileNamesRead = open('fileNames.txt', 'r')
@@ -84,7 +91,9 @@ while True:
 	igapi = InstagramAPI(igUserName,igPassword)
 	igapi.login()
 
+	#Upload to Insta
 	igapi.uploadPhoto("imageToUpload.jpg",caption=caption,upload_id=None)
 	print("Image " + caption + " uploaded.")
 
+	#Delay
 	time.sleep(randint(25200,32400))
