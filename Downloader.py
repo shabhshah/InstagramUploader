@@ -18,8 +18,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-#Connot's number: 242c5f
-
 # Imports
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
@@ -79,8 +77,14 @@ while True:
 	#Remove the .jpg from the filename
 	nameList[0] = nameList[0][:-4]
 
+	#Tag Brady or Rishabh based on ending
+	if nameList[0][-2:] == "-b":
+		nameList[0] = '"' + nameList[0][:-2] + '"' + ' - by @bradymokrzycki'
+	elif nameList[0][-2:] == "-r"
+		nameList[0] = '"' + nameList[0][:-2] + '"' + ' - by @theyungherbivore'
+
 	#Sets the caption
-	caption = '"' + nameList[0] + '"'
+	caption = nameList[0]
 
 	#Download the first image from the folder and then delete from Google Drive
 	imageToDownload = drive.CreateFile({'id': IDList[0]})
@@ -92,7 +96,7 @@ while True:
 	igapi.login()
 
 	#Upload to Insta
-	igapi.uploadPhoto("imageToUpload.jpg",caption=caption,upload_id=None)
+	igapi.uploadPhoto(nameList[0] + ".jpg",caption=caption,upload_id=None)
 	print("Image " + caption + " uploaded.")
 
 	#Delay
